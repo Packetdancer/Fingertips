@@ -84,7 +84,7 @@
     self.fillColor = [UIColor whiteColor];
     
     self.overlayWindow = [[UIWindow alloc] initWithFrame:self.frame];
-    
+    self.overlayWindow.rootViewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
     self.overlayWindow.userInteractionEnabled = NO;
     self.overlayWindow.windowLevel = UIWindowLevelStatusBar;
     self.overlayWindow.backgroundColor = [UIColor clearColor];
@@ -201,7 +201,7 @@
                 case UITouchPhaseMoved:
                 case UITouchPhaseStationary:
                 {
-                    MBFingerTipView *touchView = (MBFingerTipView *)[self.overlayWindow viewWithTag:touch.hash];
+                    DSFingerTipView *touchView = (DSFingerTipView *)[self.overlayWindow.rootViewController.view viewWithTag:touch.hash];
 
                     if (touch.phase != UITouchPhaseStationary && touchView != nil && [touchView isFadingOut])
                     {
@@ -211,14 +211,14 @@
                     
                     if (touchView == nil && touch.phase != UITouchPhaseStationary)
                     {
-                        touchView = [[MBFingerTipView alloc] initWithImage:self.touchImage];
-                        [self.overlayWindow addSubview:touchView];
+                        touchView = [[DSFingerTipView alloc] initWithImage:self.touchImage];
+                        [self.overlayWindow.rootViewController.view addSubview:touchView];
                     }
             
                     if ( ! [touchView isFadingOut])
                     {
                         touchView.alpha = self.touchAlpha;
-                        touchView.center = [touch locationInView:self.overlayWindow];
+                        touchView.center = [touch locationInView:self.overlayWindow.rootViewController.view];
                         touchView.tag = touch.hash;
                         touchView.timestamp = touch.timestamp;
                         touchView.shouldAutomaticallyRemoveAfterTimeout = [self shouldAutomaticallyRemoveFingerTipForTouch:touch];
@@ -266,7 +266,7 @@
     NSTimeInterval now = [[NSProcessInfo processInfo] systemUptime];
     const CGFloat REMOVAL_DELAY = 0.2;
 
-    for (MBFingerTipView *touchView in [self.overlayWindow subviews])
+    for (DSFingerTipView *touchView in [self.overlayWindow.rootViewController.view subviews])
     {
         if ( ! [touchView isKindOfClass:[MBFingerTipView class]])
             continue;
@@ -275,14 +275,14 @@
             [self removeFingerTipWithHash:touchView.tag animated:YES];
     }
 
-    if ([[self.overlayWindow subviews] count] > 0)
+    if ([[self.overlayWindow.rootViewController.view subviews] count] > 0)
         [self scheduleFingerTipRemoval];
 }
 
 - (void)removeFingerTipWithHash:(NSUInteger)hash animated:(BOOL)animated;
 {
-    MBFingerTipView *touchView = (MBFingerTipView *)[self.overlayWindow viewWithTag:hash];
-    if ( ! [touchView isKindOfClass:[MBFingerTipView class]])
+    DSFingerTipView *touchView = (DSFingerTipView *)[self.overlayWindow.rootViewController.view viewWithTag:hash];
+    if ( ! [touchView isKindOfClass:[DSFingerTipView class]])
         return;
     
     if ([touchView isFadingOut])
