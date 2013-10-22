@@ -13,14 +13,6 @@
     #error "ARC must be enabled for MBFingerTipWindow.m"
 #endif
 
-// Turn this on to debug touches during development.
-//
-#ifdef TARGET_IPHONE_SIMULATOR
-    #define DEBUG_FINGERTIP_WINDOW 1
-#else
-    #define DEBUG_FINGERTIP_WINDOW 1
-#endif
-
 @interface MBFingerTipView : UIImageView
 
 @property (nonatomic, assign) NSTimeInterval timestamp;
@@ -201,7 +193,7 @@
                 case UITouchPhaseMoved:
                 case UITouchPhaseStationary:
                 {
-                    DSFingerTipView *touchView = (DSFingerTipView *)[self.overlayWindow.rootViewController.view viewWithTag:touch.hash];
+                    MBFingerTipView *touchView = (MBFingerTipView *)[self.overlayWindow.rootViewController.view viewWithTag:touch.hash];
 
                     if (touch.phase != UITouchPhaseStationary && touchView != nil && [touchView isFadingOut])
                     {
@@ -211,7 +203,7 @@
                     
                     if (touchView == nil && touch.phase != UITouchPhaseStationary)
                     {
-                        touchView = [[DSFingerTipView alloc] initWithImage:self.touchImage];
+                        touchView = [[MBFingerTipView alloc] initWithImage:self.touchImage];
                         [self.overlayWindow.rootViewController.view addSubview:touchView];
                     }
             
@@ -266,7 +258,7 @@
     NSTimeInterval now = [[NSProcessInfo processInfo] systemUptime];
     const CGFloat REMOVAL_DELAY = 0.2;
 
-    for (DSFingerTipView *touchView in [self.overlayWindow.rootViewController.view subviews])
+    for (MBFingerTipView *touchView in [self.overlayWindow.rootViewController.view subviews])
     {
         if ( ! [touchView isKindOfClass:[MBFingerTipView class]])
             continue;
@@ -281,8 +273,8 @@
 
 - (void)removeFingerTipWithHash:(NSUInteger)hash animated:(BOOL)animated;
 {
-    DSFingerTipView *touchView = (DSFingerTipView *)[self.overlayWindow.rootViewController.view viewWithTag:hash];
-    if ( ! [touchView isKindOfClass:[DSFingerTipView class]])
+    MBFingerTipView *touchView = (MBFingerTipView *)[self.overlayWindow.rootViewController.view viewWithTag:hash];
+    if ( ! [touchView isKindOfClass:[MBFingerTipView class]])
         return;
     
     if ([touchView isFadingOut])
